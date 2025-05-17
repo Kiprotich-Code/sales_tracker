@@ -1,0 +1,56 @@
+{% extends '../main.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Rims</h2>
+        <a href="{% url 'rim-create' %}" class="btn btn-success">
+            + Add Rim
+        </a>
+    </div>
+
+    {% if rims %}
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Item</th>
+                    <th>Status</th>
+                    <th>Added On</th>
+                    <th>Finished On</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rim in rims %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ rim.item.name }}</td>
+                    <td>
+                        {% if rim.status == 'available' %}
+                        <span class="badge bg-success">{{ rim.status|title }}</span>
+                        {% else %}
+                        <span class="badge bg-secondary">{{ rim.status|title }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ rim.added_on|date:"Y-m-d H:i" }}</td>
+                    <td>{{ rim.finished_on|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'rim-detail' rim.id %}" class="btn btn-sm btn-primary">View</a>
+                            <a href="{% url 'rim-update' rim.id %}" class="btn btn-sm btn-warning">Edit</a>
+                            <a href="{% url 'rim-delete' rim.id %}" class="btn btn-sm btn-danger">Delete</a>
+                            <a href="{% url 'print-create' rim.id %}" class="btn btn-sm btn-secondary">Add Print</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">No rims found. <a href="{% url 'rim-create' %}">Add one?</a></div>
+    {% endif %}
+</div>
+{% endblock %}

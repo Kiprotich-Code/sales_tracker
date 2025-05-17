@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
 from .models import Item, Rim, Print
 from .forms import ItemForm, RimForm, PrintForm
@@ -26,7 +26,7 @@ class ItemCreateView(CreateView):
     model = Item
     form_class = ItemForm
     template_name = 'items/item_form.html'
-    success_url = reverse_lazy('item-list')
+    success_url = reverse_lazy('items')
 
 
 # class ItemUpdateView(UpdateView):
@@ -60,21 +60,21 @@ class RimCreateView(CreateView):
     model = Rim
     form_class = RimForm
     template_name = 'rims/rim_form.html'
-    success_url = reverse_lazy('rim-list')
+    success_url = reverse_lazy('rims')
 
 
 class RimUpdateView(UpdateView):
     model = Rim
     form_class = RimForm
     template_name = 'rims/rim_form.html'
-    success_url = reverse_lazy('rim-list')
+    success_url = reverse_lazy('rims')
 
 
 class RimDeleteView(DeleteView):
     model = Rim
     context_object_name = 'rim'
     template_name = 'rims/rim_confirm_delete.html'
-    success_url = reverse_lazy('rim-list')
+    success_url = reverse_lazy('rims')
 
 
 # CRUD PRINTS
@@ -90,11 +90,25 @@ class PrintDetailView(DetailView):
     template_name = 'prints/print_detail.html'
 
 
+
 class PrintCreateView(CreateView):
     model = Print
-    form_class = PrintForm
+    fields = ['qnty', 'amount', ]
     template_name = 'prints/print_form.html'
     success_url = reverse_lazy('print-list')
+
+    def dispatch(self, request, *args, **kwargs):
+        self.rim = get_object_or_404(Rim, id=self.kwargs['rim_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.rim = self.rim
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['rim'] = self.rim
+        return context
 
 
 class PrintUpdateView(UpdateView):
