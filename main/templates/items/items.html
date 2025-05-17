@@ -1,0 +1,11 @@
+{% extends '../main.html' %}
+
+{% block content %}
+
+Items: 
+{% for item in items %}
+    <li>
+        {{item.name}}
+    </li>
+{% endfor %}
+{% endblock %}
