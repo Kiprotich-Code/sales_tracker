@@ -1,0 +1,52 @@
+{% extends '../main.html' %}
+{% load math_filters %}
+
+{% block content %}
+<h2 class="mb-4">Rim Details</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Item: {{ rim.item.name }}</h5>
+        <span class="badge 
+                {% if rim.status == 'available' %}
+                    bg-success
+                {% else %}
+                    bg-secondary
+                {% endif %}
+            ">
+            {{ rim.status|title }}
+        </span>
+
+        <p>Added On: {{ rim.added_on|date:"Y-m-d H:i" }}</p>
+        <p>Finished On: {{ rim.finished_on|date:"Y-m-d H:i" }}</p>
+    </div>
+</div>
+
+<h4 class="mb-3">Prints for this Rim</h4>
+
+{% if prints %}
+<div class="table-responsive">
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Estimated Quantity</th>
+                <th>Amount (Ksh)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in prints %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ p.amount|divide_by:10 }}</td>
+                <td>{{ p.amount }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p>No prints recorded for this rim yet.</p>
+{% endif %}
+
+{% endblock %}

@@ -19,6 +19,8 @@
                     <th>Status</th>
                     <th>Added On</th>
                     <th>Finished On</th>
+                    <th>Prints</th>
+                    <th>Deviation</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -36,6 +38,15 @@
                     </td>
                     <td>{{ rim.added_on|date:"Y-m-d H:i" }}</td>
                     <td>{{ rim.finished_on|date:"Y-m-d H:i" }}</td>
+                    <td>{{ rim.total_prints }}</td>
+                    <td>
+                        {% if rim.deviation >= 0 %}
+                        <span class="text-success">+{{ rim.deviation }}</span>
+                        {% else %}
+                        <span class="text-danger">{{ rim.deviation }}</span>
+                        {% endif %}
+                    </td>
+
                     <td>
                         <div class="d-flex gap-2">
                             <a href="{% url 'rim-detail' rim.id %}" class="btn btn-sm btn-primary">View</a>

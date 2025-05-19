@@ -1,8 +1,12 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
 from .models import Item, Rim, Print
 from .forms import ItemForm, RimForm, PrintForm
 from django.urls import reverse_lazy
+from django.db.models import Sum, F, FloatField
+from django.db.models.functions import Cast
+from collections import defaultdict
+from django.utils.timezone import localtime
 
 # Create your views here.
 def home(request):
@@ -36,11 +40,11 @@ class ItemCreateView(CreateView):
 #     success_url = reverse_lazy('item-list')
 
 
-# class ItemDeleteView(DeleteView):
-#     model = Item
-#     context_object_name = 'item'
-#     template_name = 'items/item_confirm_delete.html'
-#     success_url = reverse_lazy('item-list')
+class ItemDeleteView(DeleteView):
+    model = Item
+    context_object_name = 'item'
+    template_name = 'items/item_confirm_delete.html'
+    success_url = reverse_lazy('items')
 
 
 # CRUD RIM 
@@ -49,11 +53,24 @@ class RimListView(ListView):
     context_object_name = 'rims'
     template_name = 'rims/rim_list.html'
 
+    def get_queryset(self):
+        rims = Rim.objects.all().prefetch_related('prints', 'item')
+        for rim in rims:
+            total_amount = rim.prints.aggregate(total=Sum('amount'))['total'] or 0
+            rim.total_prints = total_amount // 10
+            rim.deviation = rim.total_prints - 500
+        return rims
+
 
 class RimDetailView(DetailView):
     model = Rim
     context_object_name = 'rim'
     template_name = 'rims/rim_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['prints'] = self.object.prints.all().order_by('-id')  # latest first
+        return context
 
 
 class RimCreateView(CreateView):
@@ -83,6 +100,20 @@ class PrintListView(ListView):
     context_object_name = 'prints'
     template_name = 'prints/print_list.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        grouped_prints = defaultdict(list)
+
+        prints = Print.objects.select_related('rim__item').order_by('-id')
+
+        for print_obj in prints:
+            local_date = localtime(print_obj.rim.added_on).date()
+            grouped_prints[local_date].append(print_obj)
+
+        # Sort by date descending
+        context['grouped_prints'] = dict(sorted(grouped_prints.items(), reverse=True))
+        return context
+
 
 class PrintDetailView(DetailView):
     model = Print
@@ -93,17 +124,18 @@ class PrintDetailView(DetailView):
 
 class PrintCreateView(CreateView):
     model = Print
-    fields = ['qnty', 'amount', ]
+    fields = ['qnty', 'amount']
     template_name = 'prints/print_form.html'
-    success_url = reverse_lazy('print-list')
 
     def dispatch(self, request, *args, **kwargs):
         self.rim = get_object_or_404(Rim, id=self.kwargs['rim_id'])
+        self.next_url = request.META.get('HTTP_REFERER')  # Save the previous page
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         form.instance.rim = self.rim
-        return super().form_valid(form)
+        self.object = form.save()
+        return redirect(self.next_url or 'print-list')  # fallback to print-list if no referrer
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

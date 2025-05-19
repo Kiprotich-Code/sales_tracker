@@ -24,10 +24,10 @@
                         <a class="nav-link" href="{% url 'items' %}">Items</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="">Rims</a>
+                        <a class="nav-link" href="{% url 'rims' %}">Rims</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="">Prints</a>
+                        <a class="nav-link" href="{% url 'print-list' %}">Prints</a>
                     </li>
                 </ul>
             </div>
@@ -48,7 +48,7 @@
                         <div class="card-body text-center">
                             <h5 class="card-title">Items</h5>
                             <p class="card-text">Manage product items.</p>
-                            <a href="" class="btn btn-primary w-100 mb-2">View Items</a>
+                            <a href="{% url 'items' %}" class="btn btn-primary w-100 mb-2">View Items</a>
                             <a href="{% url 'add_item' %}" class="btn btn-outline-success w-100">Add Item</a>
                         </div>
                     </div>
@@ -60,8 +60,8 @@
                         <div class="card-body text-center">
                             <h5 class="card-title">Rims</h5>
                             <p class="card-text">Track rim availability and status.</p>
-                            <a href="" class="btn btn-primary w-100 mb-2">View Rims</a>
-                            <a href="" class="btn btn-outline-success w-100">Add Rim</a>
+                            <a href="{% url 'rims' %}" class="btn btn-primary w-100 mb-2">View Rims</a>
+                            <a href="{% url 'rim-create' %}" class="btn btn-outline-success w-100">Add Rim</a>
                         </div>
                     </div>
                 </div>
@@ -72,8 +72,7 @@
                         <div class="card-body text-center">
                             <h5 class="card-title">Prints</h5>
                             <p class="card-text">Monitor print transactions.</p>
-                            <a href="" class="btn btn-primary w-100 mb-2">View Prints</a>
-                            <a href="" class="btn btn-outline-success w-100">Add Print</a>
+                            <a href="{% url 'print-list' %}" class="btn btn-primary w-100 mb-2">View Prints</a>
                         </div>
                     </div>
                 </div>

@@ -8,6 +8,7 @@ urlpatterns = [
     # cbvs
     path('add_item/', views.ItemCreateView.as_view(), name='add_item'),
     path('items/', views.ItemListView.as_view(), name='items'),
+    path('items/<int:pk>/delete/', views.ItemDeleteView.as_view(), name='item-delete'),
 
     # rims 
     path('rims/', views.RimListView.as_view(), name='rims'),
