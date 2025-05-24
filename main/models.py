@@ -9,7 +9,8 @@ class Item(models.Model):
 
     name = models.CharField(max_length=100)
     category = models.CharField(max_length=100, choices=CHOICES, blank=True, null=True)
-    unit = models.CharField(max_length=50, blank=True, null=True)  # e.g., "pcs", "kg"
+    unit = models.CharField(max_length=50, blank=True, null=True) # e.g., "pcs", "kg"
+    price = models.IntegerField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):
