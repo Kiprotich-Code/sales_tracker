@@ -28,6 +28,7 @@ INSTALLED_APPS = [
 
     # installed apps 
     'main',
+    'sales',
 ]
 
 MIDDLEWARE = [
