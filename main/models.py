@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 class Item(models.Model):
@@ -49,8 +50,6 @@ class Order(models.Model):
     sold_on = models.DateTimeField(auto_now_add=True)
 
     def clean(self):
-        from django.core.exceptions import ValidationError
-
         if self.item.category == 'product' and self.quantity is None:
             raise ValidationError("Quantity is required for product sales.")
         if self.item.category == 'service' and self.quantity is not None:
